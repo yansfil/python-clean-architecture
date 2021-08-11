@@ -1,9 +1,10 @@
 from typing import Optional
 
 from fastapi import FastAPI
-
+from app.adapters import orm
 app = FastAPI()
-
+#Database ORM Mapping
+orm.start_mappers()
 
 @app.get("/")
 def read_root():

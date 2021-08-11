@@ -1,8 +1,7 @@
-import sqlite3
-from pydantic.main import Model
+from pydantic import BaseModel
 
 
-class Post(Model):
+class Post(BaseModel):
     id: str
     user_id: str
     title: str
