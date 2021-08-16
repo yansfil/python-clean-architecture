@@ -1,3 +1,4 @@
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -6,14 +7,13 @@ from app.adapters.orm import metadata
 from app.domains.user import User
 
 
-def test_orm():
-    sqlite_filepath = "db"
+@pytest.fixture(scope="session")
+def session():
     orm.start_mappers()
-    engine = create_engine(url=f"sqlite:///{sqlite_filepath}")
+    engine = create_engine(url=f"sqlite:///db?check_same_thread=False")
     metadata.create_all(engine)
     get_session = sessionmaker(bind=engine)
     session = get_session()
-    user = User(id=1, name="grab", password="grab")
-    session.add(user)
-    session.commit()
-    assert True
+    yield session
+    session.close()
+
