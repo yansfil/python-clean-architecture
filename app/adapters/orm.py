@@ -1,26 +1,44 @@
-from sqlalchemy import MetaData, Table, Column, String, Integer, ForeignKey
-from sqlalchemy.orm import mapper, relationship
+from sqlalchemy import (
+    Column,
+    ForeignKey,
+    Integer,
+    MetaData,
+    String,
+    Table,
+    create_engine,
+)
+from sqlalchemy.orm import mapper, relationship, sessionmaker
 
-from app.domains.user import User, Post
+from app.domains.user import Post, User
 
 metadata = MetaData()
 
 users = Table(
-    'users', metadata,
-    Column('id', Integer, primary_key=True, autoincrement=True),
-    Column('name', String(10)),
-    Column('password', String(15))
+    "users",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("user_id", String(15)),
+    Column("name", String(10)),
+    Column("password", String(15)),
 )
 
 posts = Table(
-    'posts', metadata,
-    Column('id', Integer, primary_key=True, autoincrement=True),
-    Column('title', String(30)),
-    Column('content', String(500)),
-    Column('user_id', ForeignKey('users.id'))
+    "posts",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("title", String(30)),
+    Column("content", String(500)),
+    Column("user_id", ForeignKey("users.id")),
 )
+
 
 def start_mappers():
     posts_mapper = mapper(Post, posts)
     users_mapper = mapper(User, users, properties={"posts": relationship(posts_mapper)})
 
+
+def get_session_factory():
+    engine = create_engine(url=f"sqlite:///db?check_same_thread=False")
+    metadata.create_all(engine)
+    session_factory = sessionmaker(bind=engine)
+    return session_factory
