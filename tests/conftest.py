@@ -1,17 +1,24 @@
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import clear_mappers, sessionmaker
 
-from app.adapters import orm
-from app.adapters.orm import metadata
+from app.adapters.orm import metadata, start_mappers
 
 
-@pytest.fixture(scope="session")
-def session():
-    orm.start_mappers()
-    engine = create_engine(url=f"sqlite:///?check_same_thread=False")
+@pytest.fixture
+def in_memory_db():
+    engine = create_engine("sqlite:///")
     metadata.create_all(engine)
-    get_session = sessionmaker(bind=engine)
-    session = get_session()
-    yield session
-    session.close()
+    return engine
+
+
+@pytest.fixture
+def session_factory(in_memory_db):
+    start_mappers()
+    yield sessionmaker(bind=in_memory_db, expire_on_commit=False)
+    clear_mappers()
+
+
+@pytest.fixture
+def session(session_factory):
+    return session_factory()

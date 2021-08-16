@@ -9,6 +9,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import mapper, relationship, sessionmaker
 
+from app.config import DB_PATH
 from app.domains.user import Post, User
 
 metadata = MetaData()
@@ -38,7 +39,7 @@ def start_mappers():
 
 
 def get_session_factory():
-    engine = create_engine(url=f"sqlite:///db?check_same_thread=False")
+    engine = create_engine(url=f"sqlite:///{DB_PATH}?check_same_thread=False")
     metadata.create_all(engine)
-    session_factory = sessionmaker(bind=engine)
+    session_factory = sessionmaker(bind=engine, expire_on_commit=False)
     return session_factory
