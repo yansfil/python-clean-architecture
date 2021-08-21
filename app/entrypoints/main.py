@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from app.adapters import orm
 from app.adapters.orm import get_session_factory
@@ -9,6 +11,14 @@ from app.services.uow import UserUnitOfWork
 app = FastAPI()
 # Database ORM Mapping
 orm.start_mappers()
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=400,
+        content={"message": str(exc)},
+    )
 
 
 @app.post("/users", status_code=201)
