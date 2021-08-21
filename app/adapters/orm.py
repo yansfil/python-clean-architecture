@@ -18,7 +18,7 @@ users = Table(
     "users",
     metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("user_id", String(15)),
+    Column("user_id", String(15), unique=True),
     Column("name", String(10)),
     Column("password", String(15)),
 )
