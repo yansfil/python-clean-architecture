@@ -10,6 +10,9 @@ class UserRepository:
     def create(self, user: User):
         self.session.add(user)
 
+    def find_one_by_id(self, user_id: str) -> User:
+        return self.session.query(User).filter_by(user_id=user_id).first()
+
     def find_one(self, user_id: str, password: str) -> User:
         return (
             self.session.query(User)

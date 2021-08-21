@@ -33,6 +33,13 @@ def create_user(user: UserRequest):
     return UserResponse(id=user.user_id, name=user.name)
 
 
+@app.get("/users/{user_id}", status_code=201)
+def create_user(user_id):
+    uow = UserUnitOfWork(get_session_factory())
+    user = service.find_user_by_id(user_id=user_id, uow=uow)
+    return UserResponse(id=user.user_id, name=user.name)
+
+
 @app.post("/posts", status_code=201)
 def create_post(post: PostRequest):
     uow = UserUnitOfWork(get_session_factory())

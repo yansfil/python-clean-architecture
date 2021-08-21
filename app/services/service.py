@@ -14,6 +14,15 @@ def create_user(
     return CreateUserDTO(user_id=user.user_id, name=user.name)
 
 
+def find_user_by_id(user_id: str, uow: AbstractUnitOfWork) -> User:
+    with uow:
+        user = uow.users.find_one_by_id(user_id=user_id)
+        if not user:
+            raise Exception("해당 유저가 존재하지 않습니다")
+        uow.commit()
+    return user
+
+
 def create_post(
     user_id: str, user_password: str, title: str, content: str, uow: AbstractUnitOfWork
 ) -> CreatePostDTO:
