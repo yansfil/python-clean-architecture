@@ -1,7 +1,7 @@
 from app.domains.user import Post, User
 
 
-def test_create_post_success():
+def test_create_post_domain():
     name, password = "grab", "zzang"
     user = User(name=name, password=password)
 
@@ -10,7 +10,7 @@ def test_create_post_success():
     assert user.password == password
 
 
-def test_user_create_post_success():
+def test_user_create_post_domain():
     name, password = "grab", "zzang"
     user = User(name=name, password=password)
     post = Post(title="hello", content="world")

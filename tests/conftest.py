@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 
 from app.adapters.orm import metadata, start_mappers
+from app.domains.user import User
 
 
 @pytest.fixture
@@ -22,3 +23,16 @@ def session_factory(in_memory_db):
 @pytest.fixture
 def session(session_factory):
     return session_factory()
+
+
+### Depends on session
+@pytest.fixture(scope="function")
+def mock_default_users(session):
+    mock_users = [
+        User(user_id="grab1", password="grab1", name="hoyeon1", posts=[]),
+        User(user_id="grab2", password="grab2", name="hoyeon2", posts=[]),
+    ]
+    for user in mock_users:
+        session.add(user)
+    session.commit()
+    return mock_users
