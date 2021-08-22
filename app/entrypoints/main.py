@@ -4,7 +4,14 @@ from starlette.responses import JSONResponse
 
 from app.adapters import orm
 from app.adapters.orm import get_session_factory
-from app.entrypoints.dto import PostRequest, PostResponse, UserRequest, UserResponse
+from app.entrypoints.dto import (
+    PostRequest,
+    PostResponse,
+    UserListResponse,
+    UserListResponseItem,
+    UserRequest,
+    UserResponse,
+)
 from app.services import service
 from app.services.uow import UserUnitOfWork
 
@@ -33,11 +40,20 @@ def create_user(user: UserRequest):
     return UserResponse(id=user.user_id, name=user.name)
 
 
-@app.get("/users/{user_id}", status_code=201)
-def create_user(user_id):
+@app.get("/users/{user_id}", status_code=200)
+def find_user(user_id):
     uow = UserUnitOfWork(get_session_factory())
     user = service.find_user_by_id(user_id=user_id, uow=uow)
     return UserResponse(id=user.user_id, name=user.name)
+
+
+@app.get("/users", status_code=200)
+def find_all_users():
+    uow = UserUnitOfWork(get_session_factory())
+    users = service.find_all_users(uow=uow)
+    return UserListResponse(
+        items=[UserListResponseItem(id=user.user_id, name=user.name) for user in users]
+    )
 
 
 @app.post("/posts", status_code=201)

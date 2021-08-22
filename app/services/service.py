@@ -1,3 +1,5 @@
+from typing import List
+
 from app.domains.user import Post, User
 from app.services.dto import CreatePostDTO, CreateUserDTO
 from app.services.uow import AbstractUnitOfWork
@@ -21,6 +23,13 @@ def find_user_by_id(user_id: str, uow: AbstractUnitOfWork) -> User:
             raise Exception("해당 유저가 존재하지 않습니다")
         uow.commit()
     return user
+
+
+def find_all_users(uow: AbstractUnitOfWork) -> List[User]:
+    with uow:
+        users = uow.users.find_all()
+        uow.commit()
+    return users
 
 
 def create_post(

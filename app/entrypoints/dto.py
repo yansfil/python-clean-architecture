@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -10,6 +12,15 @@ class UserRequest(BaseModel):
 class UserResponse(BaseModel):
     id: str
     name: str
+
+
+class UserListResponseItem(BaseModel):
+    id: str
+    name: str
+
+
+class UserListResponse(BaseModel):
+    items: List[UserListResponseItem]
 
 
 class PostRequest(BaseModel):
