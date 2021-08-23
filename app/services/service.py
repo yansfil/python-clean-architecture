@@ -32,6 +32,16 @@ def find_all_users(uow: AbstractUnitOfWork) -> List[User]:
     return users
 
 
+def delete_user(user_id: str, password: str, uow: AbstractUnitOfWork):
+    with uow:
+        user = uow.users.find_one(user_id=user_id, password=password)
+        if not user:
+            raise Exception("해당 유저가 존재하지 않습니다")
+        uow.users.delete(user)
+        uow.commit()
+    return True
+
+
 def create_post(
     user_id: str, user_password: str, title: str, content: str, uow: AbstractUnitOfWork
 ) -> CreatePostDTO:

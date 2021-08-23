@@ -23,7 +23,11 @@ class UserListResponse(BaseModel):
     items: List[UserListResponseItem]
 
 
-class PostRequest(BaseModel):
+class DeleteUserRequest(BaseModel):
+    password: str
+
+
+class CreatePostRequest(BaseModel):
     user_id: str
     user_password: str
     title: str

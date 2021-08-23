@@ -24,3 +24,6 @@ class UserRepository:
             .filter_by(user_id=user_id, password=password)
             .first()
         )
+
+    def delete(self, user: User):
+        self.session.delete(user)
