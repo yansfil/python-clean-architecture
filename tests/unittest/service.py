@@ -1,9 +1,11 @@
+import pytest
+
 from app.services import service
 from app.services.dto import CreatePostDTO, CreateUserDTO
 from app.services.uow import UserUnitOfWork
 
 
-def test_create_user_service(session_factory):
+def test_create_user(session_factory):
     user_id, name, password = "grab", "hoyeon", "zzang"
     uow = UserUnitOfWork(session_factory=session_factory)
 
@@ -12,7 +14,7 @@ def test_create_user_service(session_factory):
     assert user == CreateUserDTO(user_id=user_id, name=name)
 
 
-def test_find_all_users_service(session_factory, mock_default_users):
+def test_find_all_users(session_factory, mock_default_users):
     user_id, name, password = "grab", "hoyeon", "zzang"
     uow = UserUnitOfWork(session_factory=session_factory)
 
@@ -21,6 +23,22 @@ def test_find_all_users_service(session_factory, mock_default_users):
         users
     ):  # MEMO: 기본적으로 users는 lazy loading이고 uow의 context manager에 의해 session이 close된다. 따라서 posts 접근 시 에러가 발생한다.
         assert user.user_id == mock_default_users[idx].user_id
+
+
+def test_delete_user_well(session_factory, mock_default_users):
+    user_id, name, password = "grab1", "hoyeon", "grab1"
+    uow = UserUnitOfWork(session_factory=session_factory)
+
+    result = service.delete_user(user_id=user_id, password=password, uow=uow)
+    assert result is True
+
+
+def test_delete_user_not_found(session_factory, mock_default_users):
+    user_id, name, password = "hardy", "hoyeon", "humphrey"
+    uow = UserUnitOfWork(session_factory=session_factory)
+
+    with pytest.raises(Exception):
+        service.delete_user(user_id=user_id, password=password, uow=uow)
 
 
 def test_create_post_service(session_factory, mock_default_users):
