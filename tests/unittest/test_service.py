@@ -1,77 +1,77 @@
 import pytest
 
-from app.services import service
-from app.services.dto import CreatePostDTO, CreateUserDTO
+from app.services.dto import CreatePostDTO, CreateUserDTO, FindPostDTO
+from app.services.service import PostService, UserService
 from app.services.uow import PostUnitOfWork, UserUnitOfWork
 
 pytest.mark.usefixtures("mappers")
 
 
-def test_create_user(session_factory):
-    user_id, name, password = "grab", "hoyeon", "zzang"
+@pytest.fixture
+def user_service(session_factory, mock_default_users):
     uow = UserUnitOfWork(session_factory=session_factory)
+    return UserService(uow=uow)
 
-    user = service.create_user(user_id=user_id, name=name, password=password, uow=uow)
+
+@pytest.fixture
+def post_service(session_factory, user_service, mock_default_posts):
+    uow = PostUnitOfWork(session_factory=session_factory)
+    return PostService(uow=uow, user_service=user_service)
+
+
+def test_create_user(session_factory, user_service):
+    user_id, name, password = "grab", "hoyeon", "zzang"
+    user = user_service.create_user(user_id=user_id, name=name, password=password)
 
     assert user == CreateUserDTO(user_id=user_id, name=name)
 
 
-def test_find_all_users(session_factory, mock_default_users):
-    user_id, name, password = "grab", "hoyeon", "zzang"
-    uow = UserUnitOfWork(session_factory=session_factory)
+def test_find_all_users(session_factory, user_service):
 
-    users = service.find_all_users(uow=uow)
-    for idx, user in enumerate(
-        users
-    ):  # MEMO: 기본적으로 users는 lazy loading이고 uow의 context manager에 의해 session이 close된다. 따라서 posts 접근 시 에러가 발생한다.
-        assert user.user_id == mock_default_users[idx].user_id
+    users = user_service.find_all_users()
+
+    assert [user.user_id for user in users] == ["grab1", "grab2"]
 
 
-def test_delete_user_well(session_factory, mock_default_users):
+def test_delete_user_well(session_factory, user_service):
     user_id, name, password = "grab1", "hoyeon", "grab1"
-    uow = UserUnitOfWork(session_factory=session_factory)
 
-    result = service.delete_user(user_id=user_id, password=password, uow=uow)
+    result = user_service.delete_user(user_id=user_id, password=password)
     assert result is True
 
 
-def test_delete_user_not_found(session_factory, mock_default_users):
+def test_delete_user_not_found(session_factory, user_service):
     user_id, name, password = "hardy", "hoyeon", "humphrey"
-    uow = UserUnitOfWork(session_factory=session_factory)
 
     with pytest.raises(Exception):
-        service.delete_user(user_id=user_id, password=password, uow=uow)
+        user_service.delete_user(user_id=user_id, password=password)
 
 
-def test_find_all_posts_service(session_factory, mock_default_posts):
-    uow = PostUnitOfWork(session_factory=session_factory)
+def test_find_all_posts_service(session_factory, post_service):
+    posts = post_service.find_all_posts()
 
-    posts = service.find_all_posts(uow=uow)
-    for idx, post in enumerate(posts):
-        assert post == mock_default_posts[idx]
-
-
-def test_find_post_by_id_service(session_factory, mock_default_posts):
-    uow = PostUnitOfWork(session_factory=session_factory)
-
-    post = service.find_post_by_id(post_id=1, uow=uow)
-
-    assert post == mock_default_posts[0]
+    # default_mock_posts 참고
+    assert posts == [
+        FindPostDTO(id=1, user_id=1, title="제목1", content="내용1"),
+        FindPostDTO(id=2, user_id=2, title="제목2", content="내용2"),
+    ]
 
 
-def test_create_post_service(session_factory, mock_default_users):
-    user_id, name, password = (
-        mock_default_users[0].user_id,
-        mock_default_users[0].name,
-        mock_default_users[0].password,
-    )
+def test_find_post_by_id_service(session_factory, post_service):
+    post = post_service.find_post_by_id(post_id=1)
+
+    assert post == FindPostDTO(id=1, user_id=1, title="제목1", content="내용1")
+
+
+def test_create_post_service(session_factory, post_service):
+    user_id, name, password = "grab1", "hoyeon1", "grab1"
+
     title, content = "제목", "내용"
-    uow = UserUnitOfWork(session_factory=session_factory)
 
-    post = service.create_post(
-        user_id=user_id, user_password=password, title=title, content=content, uow=uow
+    post = post_service.create_post(
+        user_id=user_id, user_password=password, title=title, content=content
     )
 
     assert post == CreatePostDTO(
-        id=post.id, user_id=user_id, user_name=name, title=title, content=content
+        user_id=1, id=post.id, user_name=name, title=title, content=content
     )
