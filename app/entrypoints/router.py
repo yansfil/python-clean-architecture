@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from app.entrypoints.di.containers import Container
 from app.entrypoints.dto import (
     CreatePostRequest,
+    DeletePostRequest,
     DeleteUserRequest,
     PostListResponse,
     PostListResponseItem,
@@ -105,3 +106,14 @@ def create_post(
         title=post.title,
         content=post.content,
     )
+
+
+@router.delete("/posts/{post_id}", status_code=204)
+@inject
+def delete_user(
+    post_id: int,
+    body: DeletePostRequest,
+    service: PostService = Depends(Provide[Container.post_service]),
+):
+    service.delete_post(post_id=post_id, user_id=body.user_id, password=body.password)
+    return True

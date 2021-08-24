@@ -75,3 +75,12 @@ def test_create_post_service(session_factory, post_service):
     assert post == CreatePostDTO(
         user_id=1, id=post.id, user_name=name, title=title, content=content
     )
+
+
+def test_delete_post_well(session_factory, post_service):
+    post_id, user_id, password = 1, "grab1", "grab1"
+
+    result = post_service.delete_post(
+        post_id=post_id, user_id=user_id, password=password
+    )
+    assert result is True

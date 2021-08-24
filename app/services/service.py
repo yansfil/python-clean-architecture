@@ -106,3 +106,15 @@ class PostService:
             title=post.title,
             content=post.content,
         )
+
+    def delete_post(self, post_id: int, user_id: str, password: str):
+        with self.uow:
+            user = self.user_service.find_one_by_password(
+                user_id=user_id, password=password
+            )
+            if not user:
+                raise Exception("해당 유저가 존재하지 않습니다")
+            post = self.uow.repo.find_one_by_id(id=post_id)
+            self.uow.repo.delete(post)
+            self.uow.commit()
+        return True

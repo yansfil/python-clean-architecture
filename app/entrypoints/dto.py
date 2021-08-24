@@ -51,3 +51,8 @@ class PostListResponseItem(BaseModel):
 
 class PostListResponse(BaseModel):
     items: List[PostListResponseItem]
+
+
+class DeletePostRequest(BaseModel):
+    user_id: str
+    password: str
