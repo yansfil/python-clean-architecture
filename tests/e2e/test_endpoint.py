@@ -1,11 +1,11 @@
 from fastapi.testclient import TestClient
 
-from app.entrypoints.main import app
+from app.entrypoints.main import create_app
 
 
 # TODO: e2e 테스트들은 docker-compose로 빼기
 def test_user_create_api():
-    client = TestClient(app)
+    client = TestClient(create_app())
     response = client.post(
         "/users", json={"id": "grab", "name": "hoyeon", "password": "zzang"}
     )

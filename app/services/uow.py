@@ -25,7 +25,7 @@ class AbstractUnitOfWork(abc.ABC):
 
 
 class UserUnitOfWork(AbstractUnitOfWork):
-    def __init__(self, session_factory):
+    def __init__(self, session_factory=None):
         if not session_factory:
             session_factory = get_session_factory()
         self.session_factory = session_factory
