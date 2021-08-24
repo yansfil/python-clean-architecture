@@ -4,6 +4,8 @@ from app.services import service
 from app.services.dto import CreatePostDTO, CreateUserDTO
 from app.services.uow import UserUnitOfWork
 
+pytest.mark.usefixtures("mappers")
+
 
 def test_create_user(session_factory):
     user_id, name, password = "grab", "hoyeon", "zzang"

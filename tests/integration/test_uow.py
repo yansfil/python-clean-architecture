@@ -1,5 +1,9 @@
+import pytest
+
 from app.domains.user import User
 from app.services.uow import UserUnitOfWork
+
+pytest.mark.usefixtures("mappers")
 
 
 def test_uow_create_user(session_factory, session):

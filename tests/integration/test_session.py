@@ -1,4 +1,8 @@
+import pytest
+
 from app.domains.user import Post, User
+
+pytest.mark.usefixtures("mappers")
 
 
 def test_create_user(session):
