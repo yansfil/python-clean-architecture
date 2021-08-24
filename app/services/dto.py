@@ -6,9 +6,12 @@ class CreateUserDTO(BaseModel):
     name: str
 
 
-class CreatePostDTO(BaseModel):
+class FindPostDTO(BaseModel):
     id: str
     user_id: str
-    user_name: str
     title: str
     content: str
+
+
+class CreatePostDTO(FindPostDTO):
+    user_name: str

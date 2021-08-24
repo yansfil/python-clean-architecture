@@ -37,7 +37,7 @@ class UserRepository(AbstractRepository):
     def find_all(self) -> List[User]:
         return self.session.query(User).all()
 
-    def find_one(self, user_id: str, password: str) -> User:
+    def find_one_by_password(self, user_id: str, password: str) -> User:
         return (
             self.session.query(User)
             .filter_by(user_id=user_id, password=password)
@@ -49,8 +49,9 @@ class UserRepository(AbstractRepository):
 
 
 class PostRepository(AbstractRepository):
-    def create(self, post: Post):
+    def create(self, post: Post) -> Post:
         self.session.add(post)
+        return post
 
     def find_one_by_id(self, id: int) -> Post:
         return self.session.query(Post).filter_by(id=id).first()

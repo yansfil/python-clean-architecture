@@ -3,12 +3,10 @@ from __future__ import annotations
 import abc
 
 from app.adapters.orm import get_session_factory
-from app.adapters.repository import AbstractRepository, PostRepository, UserRepository
+from app.adapters.repository import PostRepository, UserRepository
 
 
 class AbstractUnitOfWork(abc.ABC):
-    repo: AbstractRepository
-
     def __enter__(self) -> AbstractUnitOfWork:
         return self
 

@@ -1,12 +1,11 @@
-from dataclasses import dataclass
 from typing import List, Optional
 
 
-@dataclass
 class Post:
-    title: str
-    content: str
-    user_id: Optional[int] = None
+    def __init__(self, title: str, content: str, user_id: Optional[int] = None):
+        self.title = title
+        self.content = content
+        self.user_id = user_id
 
 
 class User:
