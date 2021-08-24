@@ -15,7 +15,7 @@ def test_user_create_api():
 
 
 def test_post_create_api():
-    client = TestClient(app)
+    client = TestClient(create_app())
     user_id, name, password = "grab", "hoyeon", "good"
     title, content = "제목", "내용"
 

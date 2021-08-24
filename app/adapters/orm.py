@@ -10,7 +10,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import mapper, relationship, sessionmaker
 
 from app.config import DB_PATH
-from app.domains.user import Post, User
+from app.domains.model import Post, User
 
 metadata = MetaData()
 

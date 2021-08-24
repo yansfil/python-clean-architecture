@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import clear_mappers, sessionmaker
 
 from app.adapters.orm import metadata, start_mappers
-from app.domains.user import User
+from app.domains.model import Post, User
 
 
 @pytest.fixture
@@ -13,7 +13,7 @@ def in_memory_db():
     return engine
 
 
-@pytest.fixture()
+@pytest.fixture
 def mappers():
     start_mappers()
     yield
@@ -40,4 +40,19 @@ def mock_default_users(session):
     for user in mock_users:
         session.add(user)
     session.commit()
+
     return mock_users
+
+
+### Depends on session
+@pytest.fixture(scope="function")
+def mock_default_posts(session, mock_default_users):
+    mock_posts = [
+        Post(user_id=mock_default_users[0].id, title="제목1", content="내용1"),
+        Post(user_id=mock_default_users[1].id, title="제목2", content="내용2"),
+    ]
+    for post in mock_posts:
+        session.add(post)
+    session.commit()
+
+    return mock_posts

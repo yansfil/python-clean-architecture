@@ -1,6 +1,6 @@
 import pytest
 
-from app.domains.user import Post, User
+from app.domains.model import Post, User
 
 pytest.mark.usefixtures("mappers")
 
@@ -21,7 +21,7 @@ def test_create_post(session):
     user = User(user_id=user_id, name=name, password=password)
     post = Post(title="hello", content="world")
 
-    user.create_post(post)
+    user.add_post(post)
     session.add(user)
     session.commit()
 

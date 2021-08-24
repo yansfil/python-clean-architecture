@@ -3,11 +3,11 @@ from __future__ import annotations
 import abc
 
 from app.adapters.orm import get_session_factory
-from app.adapters.repository import UserRepository
+from app.adapters.repository import AbstractRepository, PostRepository, UserRepository
 
 
 class AbstractUnitOfWork(abc.ABC):
-    users: UserRepository
+    repo: AbstractRepository
 
     def __enter__(self) -> AbstractUnitOfWork:
         return self
@@ -32,7 +32,29 @@ class UserUnitOfWork(AbstractUnitOfWork):
 
     def __enter__(self):
         self.session = self.session_factory()
-        self.users = UserRepository(self.session)
+        self.repo = UserRepository(self.session)
+        return super().__enter__()
+
+    def __exit__(self, *args):
+        super().__exit__(*args)
+        self.session.close()
+
+    def commit(self):
+        self.session.commit()
+
+    def rollback(self):
+        self.session.rollback()
+
+
+class PostUnitOfWork(AbstractUnitOfWork):
+    def __init__(self, session_factory=None):
+        if not session_factory:
+            session_factory = get_session_factory()
+        self.session_factory = session_factory
+
+    def __enter__(self):
+        self.session = self.session_factory()
+        self.repo = PostRepository(self.session)
         return super().__enter__()
 
     def __exit__(self, *args):

@@ -1,7 +1,7 @@
-from app.domains.user import Post, User
+from app.domains.model import Post, User
 
 
-def test_create_post_domain():
+def test_create_user_domain():
     user_id, name, password = "grab", "hoyeon", "zzang"
     user = User(user_id=user_id, name=name, password=password)
 
@@ -10,12 +10,12 @@ def test_create_post_domain():
     assert user.password == password
 
 
-def test_user_create_post_domain():
+def test_create_post_domain():
     user_id, name, password = "grab", "hoyeon", "zzang"
     user = User(user_id=user_id, name=name, password=password)
     post = Post(title="hello", content="world")
 
-    user.create_post(post)
+    user.add_post(post)
 
     assert len(user.posts) == 1
     assert user.posts[0] == post

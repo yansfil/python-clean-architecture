@@ -18,6 +18,6 @@ class User:
         self.password = password
         self.posts = posts
 
-    def create_post(self, post: Post):
+    def add_post(self, post: Post):
         self.posts.append(post)
         return post

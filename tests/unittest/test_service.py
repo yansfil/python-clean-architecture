@@ -2,7 +2,7 @@ import pytest
 
 from app.services import service
 from app.services.dto import CreatePostDTO, CreateUserDTO
-from app.services.uow import UserUnitOfWork
+from app.services.uow import PostUnitOfWork, UserUnitOfWork
 
 pytest.mark.usefixtures("mappers")
 
@@ -41,6 +41,22 @@ def test_delete_user_not_found(session_factory, mock_default_users):
 
     with pytest.raises(Exception):
         service.delete_user(user_id=user_id, password=password, uow=uow)
+
+
+def test_find_all_posts_service(session_factory, mock_default_posts):
+    uow = PostUnitOfWork(session_factory=session_factory)
+
+    posts = service.find_all_posts(uow=uow)
+    for idx, post in enumerate(posts):
+        assert post == mock_default_posts[idx]
+
+
+def test_find_post_by_id_service(session_factory, mock_default_posts):
+    uow = PostUnitOfWork(session_factory=session_factory)
+
+    post = service.find_post_by_id(post_id=1, uow=uow)
+
+    assert post == mock_default_posts[0]
 
 
 def test_create_post_service(session_factory, mock_default_users):

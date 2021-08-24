@@ -19,7 +19,7 @@ router = APIRouter(prefix="")
 
 @router.get("/users", status_code=200)
 @inject
-def find_all_users(uow: AbstractUnitOfWork = Depends(Provide[Container.uow])):
+def find_all_users(uow: AbstractUnitOfWork = Depends(Provide[Container.user_uow])):
     users = service.find_all_users(uow=uow)
     return UserListResponse(
         items=[UserListResponseItem(id=user.user_id, name=user.name) for user in users]
@@ -28,14 +28,16 @@ def find_all_users(uow: AbstractUnitOfWork = Depends(Provide[Container.uow])):
 
 @router.get("/users/{user_id}", status_code=200)
 @inject
-def find_user(user_id: str, uow: AbstractUnitOfWork = Depends(Provide[Container.uow])):
+def find_user(
+    user_id: str, uow: AbstractUnitOfWork = Depends(Provide[Container.user_uow])
+):
     user = service.find_user_by_id(user_id=user_id, uow=uow)
     return UserResponse(id=user.user_id, name=user.name)
 
 
 @router.post("/users", status_code=201)
 def create_user(
-    user: UserRequest, uow: AbstractUnitOfWork = Depends(Provide[Container.uow])
+    user: UserRequest, uow: AbstractUnitOfWork = Depends(Provide[Container.user_uow])
 ):
     user = service.create_user(
         user_id=user.id,
@@ -50,7 +52,7 @@ def create_user(
 def delete_user(
     user_id: str,
     body: DeleteUserRequest,
-    uow: AbstractUnitOfWork = Depends(Provide[Container.uow]),
+    uow: AbstractUnitOfWork = Depends(Provide[Container.user_uow]),
 ):
     service.delete_user(user_id=user_id, password=body.password, uow=uow)
     return True
@@ -58,7 +60,8 @@ def delete_user(
 
 @router.post("/posts", status_code=201)
 def create_post(
-    post: CreatePostRequest, uow: AbstractUnitOfWork = Depends(Provide[Container.uow])
+    post: CreatePostRequest,
+    uow: AbstractUnitOfWork = Depends(Provide[Container.user_uow]),
 ):
     post = service.create_post(
         user_id=post.user_id,
