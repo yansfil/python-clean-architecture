@@ -6,11 +6,11 @@ from app.entrypoints import router
 from app.entrypoints.di.containers import Container
 from app.entrypoints.handlers import global_exception_handler
 
+orm.start_mappers()
+
 
 def create_app():
     app = FastAPI()
-
-    orm.start_mappers()
     container = Container()
     container.wire(modules=[router])
 
