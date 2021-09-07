@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from app.entrypoints.main import create_app
+from app.entrypoints.fastapi.main import create_app
 
 
 # TODO: e2e 테스트들은 docker-compose로 빼기

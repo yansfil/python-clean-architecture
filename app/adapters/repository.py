@@ -56,11 +56,18 @@ class PostRepository(AbstractRepository):
     def find_one_by_id(self, id: int) -> Post:
         return self.session.query(Post).filter_by(id=id).first()
 
-    def find_one_by_user_id(self, user_id: int) -> Post:
-        return self.session.query(Post).filter_by(user_id=user_id).first()
+    def find_by_user_id(self, user_id: int) -> List[Post]:
+        return self.session.query(Post).filter_by(user_id=user_id).all()
 
     def find_all(self) -> List[Post]:
         return self.session.query(Post).all()
 
     def delete(self, post: Post):
         self.session.delete(post)
+
+    def delete_by_user_id(self, user_id: int):
+        return (
+            self.session.query(Post)
+            .filter_by(user_id=user_id)
+            .delete(synchronize_session=False)
+        )

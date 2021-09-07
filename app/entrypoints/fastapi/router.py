@@ -1,10 +1,13 @@
+import os
+import threading
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
+from app.domains.events import SendEmail
 from app.entrypoints.di.containers import Container
-from app.entrypoints.dto import (
+from app.entrypoints.fastapi.dto import (
     CreatePostRequest,
-    DeletePostRequest,
     DeleteUserRequest,
     PostListResponse,
     PostListResponseItem,
@@ -14,7 +17,7 @@ from app.entrypoints.dto import (
     UserRequest,
     UserResponse,
 )
-from app.services import service
+from app.services.messagebus import message_queue
 from app.services.service import PostService, UserService
 
 router = APIRouter(prefix="")
@@ -22,7 +25,12 @@ router = APIRouter(prefix="")
 
 @router.get("/users", status_code=200)
 @inject
-def find_all_users(service: UserService = Depends(Provide[Container.user_service])):
+async def find_all_users(
+    service: UserService = Depends(Provide[Container.user_service]),
+):
+    print(f"process_id: {os.getpid()}")
+    print(f"thread_id: {threading.get_ident()}")
+    message_queue.put_nowait(SendEmail(msg="계정이 삭제되었습니다"))
     users = service.find_all_users()
     return UserListResponse(
         items=[UserListResponseItem(id=user.user_id, name=user.name) for user in users]
@@ -51,7 +59,7 @@ def create_user(
     return UserResponse(id=user.user_id, name=user.name)
 
 
-@router.delete("/users/{user_id}", status_code=204)
+@router.delete("/users/{user_id}", status_code=201)
 @inject
 def delete_user(
     user_id: str,
@@ -106,14 +114,3 @@ def create_post(
         title=post.title,
         content=post.content,
     )
-
-
-@router.delete("/posts/{post_id}", status_code=204)
-@inject
-def delete_user(
-    post_id: int,
-    body: DeletePostRequest,
-    service: PostService = Depends(Provide[Container.post_service]),
-):
-    service.delete_post(post_id=post_id, user_id=body.user_id, password=body.password)
-    return True

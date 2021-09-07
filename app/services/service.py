@@ -1,7 +1,9 @@
 from typing import List
 
+from app.domains.events import DeleteUserPosts
 from app.domains.model import Post, User
 from app.services.dto import CreatePostDTO, CreateUserDTO, FindPostDTO
+from app.services.messagebus import message_queue
 from app.services.uow import PostUnitOfWork, UserUnitOfWork
 
 
@@ -48,8 +50,8 @@ class UserService:
             )
             if not user:
                 raise Exception("해당 유저가 존재하지 않습니다")
-            self.uow.repo.delete(user)
-            self.uow.commit()
+            # self.uow.repo.delete(user)
+            message_queue.put_nowait(DeleteUserPosts(user_id=user.id))
         return True
 
 
