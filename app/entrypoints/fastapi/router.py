@@ -4,8 +4,9 @@ import threading
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
-from app.domains.events import SendEmail
+from app.domains.events import DeleteUserPosts, SendEmail
 from app.entrypoints.di.containers import Container
+from app.entrypoints.event_source.external.external import ExternalEventEmitter
 from app.entrypoints.fastapi.dto import (
     CreatePostRequest,
     DeleteUserRequest,
@@ -65,8 +66,10 @@ def delete_user(
     user_id: str,
     body: DeleteUserRequest,
     service: UserService = Depends(Provide[Container.user_service]),
+    emitter: ExternalEventEmitter = Depends(Provide[Container.event_emitter]),
 ):
     service.delete_user(user_id=user_id, password=body.password)
+    emitter.emit(DeleteUserPosts(user_id=int(user_id)))  # 외부 비동기 메시지 큐에 이벤트를 보낸다.
     return True
 
 
