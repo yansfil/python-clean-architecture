@@ -3,8 +3,8 @@ from __future__ import annotations
 import asyncio
 from typing import Callable, Dict, List, Type
 
-from app.domains.events import DeleteUserPosts, Event, SendEmail
-from app.services.handlers import delete_post, send_email
+from app.domains.events import DeleteUserPosts, Event, SendEmail, SendSlack
+from app.services.handlers import delete_post, send_email, send_slack
 
 message_queue: asyncio.Queue[Event] = asyncio.Queue()
 
@@ -17,5 +17,6 @@ def handle_event(event: Event):
 
 EVENT_HANDLERS: Dict[Type[Event], List[Callable]] = {
     SendEmail: [send_email],
-    DeleteUserPosts: [delete_post],
+    SendSlack: [send_slack],
+    DeleteUserPosts: [delete_post],  # 엄밀히는 Command
 }

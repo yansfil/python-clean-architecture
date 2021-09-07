@@ -12,5 +12,10 @@ class SendEmail(Event):
 
 
 @dataclass
+class SendSlack(Event):
+    msg: str
+
+
+@dataclass
 class DeleteUserPosts(Event):
     user_id: int
