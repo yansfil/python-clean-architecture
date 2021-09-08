@@ -1,7 +1,7 @@
 from time import sleep
 
 from app.domains.events import DeleteUserPosts, SendEmail, SendSlack
-from app.services.messagebus import message_queue
+from app.services.message_queue import message_queue
 from app.services.uow import PostUnitOfWork
 
 

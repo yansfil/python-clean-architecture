@@ -1,12 +1,7 @@
-from __future__ import annotations
-
-import asyncio
 from typing import Callable, Dict, List, Type
 
 from app.domains.events import DeleteUserPosts, Event, SendEmail, SendSlack
 from app.services.handlers import delete_post, send_email, send_slack
-
-message_queue: asyncio.Queue[Event] = asyncio.Queue()
 
 
 def handle_event(event: Event):

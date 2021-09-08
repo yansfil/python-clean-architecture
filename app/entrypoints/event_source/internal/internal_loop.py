@@ -1,10 +1,7 @@
-import nest_asyncio
-
-nest_asyncio.apply()
-
 import asyncio
 
-from app.services.messagebus import handle_event, message_queue
+from app.services.message_queue import message_queue
+from app.services.messagebus import handle_event
 
 
 async def event_loop():

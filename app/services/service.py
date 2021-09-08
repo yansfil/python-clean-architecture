@@ -2,8 +2,8 @@ from typing import List
 
 from app.domains.events import DeleteUserPosts
 from app.domains.model import Post, User
+from app.entrypoints.event_source.internal.internal_loop import message_queue
 from app.services.dto import CreatePostDTO, CreateUserDTO, FindPostDTO
-from app.services.messagebus import message_queue
 from app.services.uow import PostUnitOfWork, UserUnitOfWork
 
 

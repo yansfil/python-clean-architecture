@@ -1,10 +1,7 @@
-import os
-import threading
-
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 
-from app.domains.events import DeleteUserPosts, SendEmail
+from app.domains.events import DeleteUserPosts
 from app.entrypoints.di.containers import Container
 from app.entrypoints.event_source.external.external import ExternalEventEmitter
 from app.entrypoints.fastapi.dto import (
@@ -18,7 +15,6 @@ from app.entrypoints.fastapi.dto import (
     UserRequest,
     UserResponse,
 )
-from app.services.messagebus import message_queue
 from app.services.service import PostService, UserService
 
 router = APIRouter(prefix="")
@@ -29,9 +25,6 @@ router = APIRouter(prefix="")
 async def find_all_users(
     service: UserService = Depends(Provide[Container.user_service]),
 ):
-    print(f"process_id: {os.getpid()}")
-    print(f"thread_id: {threading.get_ident()}")
-    message_queue.put_nowait(SendEmail(msg="계정이 삭제되었습니다"))
     users = service.find_all_users()
     return UserListResponse(
         items=[UserListResponseItem(id=user.user_id, name=user.name) for user in users]
